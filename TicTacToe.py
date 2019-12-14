@@ -68,20 +68,49 @@ def computerMove(board):
         a = random.randrange(0,3)
         b = random.randrange(0,3)
         
-        if board[1][1] != 0:
-            if board[a][b] != 0:
-                for y in range(len(board)):
-                    for x in range(len(board)):
-                        if board[y][x] != 0:
-                            continue
-                        else:
-                            board[y][x] = 2
-                            break
-                    break
-            else:
-                board[a][b] = 2
+        
+        for turnMov in range(1,3):
+            if board[0][0] == turnMov:
+                if board[1][1] == turnMov:
+                    if board[2][2] == 0:
+                        board[2][2] = 2
+                        app.draw(board)
+                        logic(board, 2)
+                        return
+            if board[0][2] == turnMov:
+                if board[1][1] == turnMov:
+                    if board[2][0] == 0:
+                        board[2][0] = 2
+                        app.draw(board)
+                        logic(board, 2)
+                        return
+            for y in range(3):
+                if board[y][0] == turnMov:
+                    if board[y][1] == turnMov:
+                        if board[y][2] == 0:
+                            board[y][2] = 2
+                            app.draw(board)
+                            logic(board, 2)
+                            return
+            for x in range(3):
+                if board[0][x] == turnMov:
+                    if board[1][x] == turnMov:
+                        if board[2][x] == 0:
+                            board[2][x] = 2
+                            app.draw(board)
+                            logic(board, 2)
+                            return
+        
+        if board[a][b] != 0:
+            for y in range(3):
+                for x in range(3):
+                    if board[y][x] == 0:
+                        board[y][x] = 2
+                        app.draw(board)
+                        logic(board, 2)
+                        return
         else:
-            board[1][1] = 2
+            board[a][b] = 2
         
         app.draw(board)
         logic(board, 2)
@@ -114,6 +143,7 @@ def logic(board, turnMov):
         if board[1][1] == turnMov:
             if board[2][0] == turnMov:
                 winner(turnMov)
+    
     
     global gameEnded
     if gameEnded != True:         
