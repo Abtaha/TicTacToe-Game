@@ -2,16 +2,27 @@ import tkinter as tk
 
 
 class Game(tk.Frame):
-    def __init__(self, master=None, colorCoded=False, title=""):
+    def __init__(self, master=None, colorCoded=False, title="", changeText=False):
         super().__init__(master)
         
         self.title = title
-        
+        self.changeText = changeText
         self.master = master
         self.colorCoded = colorCoded
         self["bg"] = "#F3F1E9"
         
         self.place(relwidth=1, relheight=1)
+        
+        
+    def changedText(self, text):
+        if self.changeText:
+            if str(text) == "1":
+                return "O"
+            elif str(text) == "2":
+                return "X"
+            elif str(text) == "0":
+                return ""
+        
         
     def colorCoding(self,text):
         if text == "2":
@@ -46,7 +57,7 @@ class Game(tk.Frame):
         a = 1 / len(board)
         for y in range(len(board)):
             for x in range(len(board[y])):
-                text = board[y][x]
+                text = self.changedText(board[y][x])
                 
                 if self.colorCoded == True:
                     bgcolor, fgcolor = self.colorCoding(str(text))

@@ -13,6 +13,35 @@ board = [
 ]
 
 computerTurn = False
+gameEnded = False
+
+canvasId = []
+
+
+def all_children (wid) :
+    _list = wid.winfo_children()
+
+    for item in _list :
+        if item.winfo_children() :
+            _list.extend(item.winfo_children())
+
+    return _list
+
+
+def reset():
+    global board 
+    global computerTurn
+    global gameEnded
+    
+    board = [[0,0,0],[0,0,0],[0,0,0]]
+    computerTurn = False
+    gameEnded = False
+    
+    
+    app.draw(board)
+    
+    for canvas in all_children(app.frame):
+        canvas.bind("<Button 1>", getPosition)
 
 
 def winner(turnMov):
@@ -21,28 +50,32 @@ def winner(turnMov):
     else:
         text = "You lose"
     
-    label = tk.Label(master = root, text= text, fg="grey", font=("Arial", 20))
-    label.place(relx = 0.42, rely = 0.5)
+    for canvas in all_children(app.frame):
+        canvas.unbind('<<Button 1>>')
     
+    label = tk.Label(master = app.frame, text= text, fg="grey", font=("Arial", 20))
+    label.place(relx = 0.4, rely = 0.5)
+    
+    button = tk.Button(master = app.frame, text= "Play Again", fg="grey", font=("Arial", 12), command= reset)
+    button.place(relx = 0.43, rely = 0.6)
+    
+    global gameEnded
+    gameEnded = True
 
 
 def computerMove(board):
     if computerTurn:
-        x = [0,1,2]
-        y = [0,1,2]
-
-        a = random.choice(x)
-        b = random.choice(y)
-
-
+        a = random.randrange(0,3)
+        b = random.randrange(0,3)
+        
         if board[1][1] != 0:
             if board[a][b] != 0:
-                for a in x:
-                    for b in y:
-                        if board[a][b] != 0:
+                for y in range(len(board)):
+                    for x in range(len(board)):
+                        if board[y][x] != 0:
                             continue
                         else:
-                            board[a][b] = 2
+                            board[y][x] = 2
                             break
                     break
             else:
@@ -81,23 +114,14 @@ def logic(board, turnMov):
         if board[1][1] == turnMov:
             if board[2][0] == turnMov:
                 winner(turnMov)
-                
-    if computerTurn == False:
-        computerTurn = True
-    else:
-        computerTurn = False
     
-    computerMove(board)
-
-
-def all_children (wid) :
-    _list = wid.winfo_children()
-
-    for item in _list :
-        if item.winfo_children() :
-            _list.extend(item.winfo_children())
-
-    return _list
+    global gameEnded
+    if gameEnded != True:         
+        if computerTurn == False:
+            computerTurn = True
+            computerMove(board)
+        else:
+            computerTurn = False
 
 
 
@@ -116,6 +140,8 @@ def getPosition(event):
         if int(canvas_index) == (i+1):
             if n_board[i] == 0:
                 n_board[i] = 1
+            else:
+                return
     
     n_board = n_board.reshape(3,3)
     n_board = n_board.tolist()
@@ -125,8 +151,11 @@ def getPosition(event):
     app.draw(board)
     logic(board, 1)
     
-    for canvas in all_children(app.frame):
-        canvas.bind("<Button 1>", getPosition)
+    global gameEnded
+    if gameEnded != True:
+        for canvas in all_children(app.frame):
+            canvas.bind("<Button 1>", getPosition)
+        
 
 
 
@@ -136,7 +165,7 @@ root = tk.Tk()
 root.title("TicTacToe")
 root.geometry("500x500")
 
-app = Game(master = root,  title = "TicTacToe")
+app = Game(master = root,  title = "TicTacToe", changeText = True)
 
 
 app.draw(board)
